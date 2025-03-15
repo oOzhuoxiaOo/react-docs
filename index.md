@@ -12,7 +12,7 @@ hero:
       link: /docs/guide/start/jsx
     - theme: alt
       text: 注意事项
-      link: /api-examples
+      link: /docs/guide/start/jsx
 
 features:
   - title: 快速上手react
