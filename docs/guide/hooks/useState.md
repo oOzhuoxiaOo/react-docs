@@ -1,10 +1,52 @@
 # useState
-允许函数组件在内部管理状态
+`useState` 是一个 React Hook，它允许你向组件添加一个状态变量
 
-其实就是让我们用useState自己去实现双向绑定
-> `更改的本质是不更改原始状态的情况下生成新的状态(新的引用对象)去覆盖他`
+
+
+>
+>
+>状态变量：可以理解为记忆变量，通过useState持久化存储一个数据，在组件更新时重新执行组件函数时，从useState的内部执行逻辑里能拿到新数据(上次setState时被持久化存储了)
+
+
+
+>
+>
+>**useState 为什么必须在顶层被调用？**
+>
+>让我们先看一个案例，让我一步一步分析我对useState的设计的思考：
+>
+>
+>
+>```jsx
+>function Home(){
+>const [count,setCount] = useState(0)
+>const [age,setAge] = useState(20)
+>return <div><div>
+>}
+>```
+>
+>当组件第一次渲染时候，依次执行了Home里的两个useState，然后能分别拿到不同的状态数据
+>
+>❓然后我就有个疑惑，当组件再次渲染后，count等数据他不可能是再拿初始化数据作为值(那不就像普通变量数据一样了吗)，那是怎么可以获取到最新的数据的呢？
+>
+>一定有个地方将数据持久化存储了起来，是的，肯定是在useState内部做的 ✅
+>
+>❓为什么每次useState后，组件从新渲染后，能准确再次获取count和age呢？
+>
+>我能想到的是顺序。在一个组件内如果按照Hooks执行顺序存储起来这些Hooks，那再次执行组件函数后，不就能按顺序一一映射状态了吗。
+>
+>基于此，是不是说明react需要hooks按顺序调用，所以禁止让我们把hooks放入非顶层下使用呢，是的，如果放在条件语句中等里边的useState可能是不执行的，会对顺序造成了破坏✅
+>
+>
+
+
+
+
+
+
 
 ## 使用方法
+
 ```jsx
 function Home(){
     const [keyword,setKeyword] = useState('')
@@ -117,7 +159,7 @@ function Home(){
 }
 ```
 ### 内部机制
-当我们多次以相同的操作更新状态时，React 会进行比较，如果值相同，则会屏蔽后续的更新行为。自带防抖的功能，防止频繁的更新。
+当我们多次以相同的操作更新状态时
 ```jsx
 import { useState } from "react"
 function App() {
@@ -138,7 +180,7 @@ function App() {
 }
 export default App
 ```
-结果是1并不是3，因为setIndex(index + 1)的值是一样的，后续操作被屏蔽掉了，阻止了更新。
+结果是1并不是3，因为异步，setIndex(index + 1)的值是一样的，后续操作被屏蔽掉了，阻止了更新。
 
 为了解决这个问题，你可以向setIndex 传递一个更新函数，而不是一个状态。
 
